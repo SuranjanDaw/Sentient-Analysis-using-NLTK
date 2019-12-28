@@ -2,6 +2,7 @@ from nltk.corpus import movie_reviews
 from nltk.corpus import stopwords
 import nltk
 import random
+import pickle
 
 document = []
 
@@ -64,7 +65,22 @@ def find_feature(document):
 
 #sending a review from negetive set to find features and prinitng its result
 
-print(find_feature(movie_reviews.words("neg/cv000_29416.txt")))
+#print(find_feature(movie_reviews.words("neg/cv000_29416.txt")))
 
 feature_set = [(find_feature(rev),category) for (rev,category) in document]
 
+#Naive Bayes Classifer
+
+train_set = feature_set[:1900]
+test_set = feature_set[1900:]
+
+#training the data set and saving it in pickel
+bayeClassifier = nltk.NaiveBayesClassifier.train(train_set)
+bayeClassifierSave = open("NaiveBayesClassifier.pickle","wb")
+pickle.dump(bayeClassifier,bayeClassifierSave)
+bayeClassifierSave.close()
+
+#testing it on test set
+print(nltk.classify.accuracy(bayeClassifier, test_set))
+
+bayeClassifier.show_most_informative_features(15)
