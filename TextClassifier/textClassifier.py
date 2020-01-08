@@ -4,6 +4,14 @@ from nltk.classify.scikitlearn import SklearnClassifier
 import nltk
 import random
 import pickle
+from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
+from sklearn.svm import SVC , LinearSVC , NuSVC
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from nltk.classify import ClassifierI
+from statistics import mode
+
+
+
 
 document = []
 
@@ -51,7 +59,7 @@ stop_word_removed_freq.plot(30, cumulative = False)
 
 #plotting the frequency distribution curve
 print("plot over all words")
-all_words_freq.plot(30, cumulative =False)
+'''all_words_freq.plot(30, cumulative =False)'''
 
 
 #word features
@@ -83,12 +91,15 @@ feature_set = [(find_feature(rev),category) for (rev,category) in document]
 train_set = feature_set[:1900]
 test_set = feature_set[1900:]
 
-#training the data set and saving it in pickel
+#training the data set 
 bayeClassifier = nltk.NaiveBayesClassifier.train(train_set)
+
+#saving it in pickel
+'''
 bayeClassifierSave = open("NaiveBayesClassifier.pickle","wb")
 pickle.dump(bayeClassifier,bayeClassifierSave)
 bayeClassifierSave.close()
-
+'''
 
 # to load from pickle 
 '''
@@ -101,8 +112,58 @@ bayeClassifier_file.close()
 
 #testing it on test set
 
-print(nltk.classify.accuracy(bayeClassifier, test_set))
+print("Original nltk bayes classifier accuracy: ",nltk.classify.accuracy(bayeClassifier, test_set))
 
-bayeClassifier.show_most_informative_features(15)
+#To see the most top 15 words and ratio of their classification 
+'''bayeClassifier.show_most_informative_features(15)'''
 
+
+#trianing using sklearn library for MultiNomial Naive Bayes
+
+multiNB_classifer = SklearnClassifier(MultinomialNB())
+multiNB_classifer.train(train_set)
+print("MultiNomialNB accuracy", nltk.classify.accuracy(multiNB_classifer, test_set))
+
+#trianing using sklearn library for Gaussian Naive Bayes
+'''
+gaussNB_classifer = SklearnClassifier(GaussianNB())
+gaussNB_classifer.train(train_set)
+print("GaussianNB accuracy", nltk.classify.accuracy(gaussNB_classifer, test_set))
+'''
+
+
+#trianing using sklearn library for Bernollis Naive Bayes
+
+berNB_classifer = SklearnClassifier(BernoulliNB())
+berNB_classifer.train(train_set)
+print("BernolliNB accuracy", nltk.classify.accuracy(berNB_classifer, test_set))
+
+
+#trianing using sklearn library for Linear model Linear Regression
+logisticReg_classifier = SklearnClassifier(LogisticRegression())
+logisticReg_classifier.train(train_set)
+print("Linear Regression accuracy: ", nltk.classify.accuracy(logisticReg_classifier, test_set))
+
+
+#trianing using sklearn library for Linear model Schocastic Gradient Discent Model
+grad_dist_classifier = SklearnClassifier(SGDClassifier(max_iter = 1000))
+grad_dist_classifier.train(train_set)
+print("Gradient Discent Accuracy: ", nltk.classify.accuracy(grad_dist_classifier, test_set))
+
+#trianing using sklearn library for SVM SVC Model
+'''
+SVC_classifier = SklearnClassifier(SVC())
+SVC_classifier.train(train_set)
+print("SVC Accuracy: ", nltk.classify.accuracy(SVC_classifier, test_set))
+'''
+
+#trianing using sklearn library for SVM LinearSVC Model
+linearSVC_classifier = SklearnClassifier(LinearSVC())
+linearSVC_classifier.train(train_set)
+print("Linear SVC Accuracy: ", nltk.classify.accuracy(linearSVC_classifier, test_set))
+
+#trianing using sklearn library for SVM NuSVM Model
+nuSVC_classifier = SklearnClassifier(NuSVC())
+nuSVC_classifier.train(train_set)
+print("NuSVC Accuracy: ", nltk.classify.accuracy(nuSVC_classifier, test_set))
 
