@@ -1,5 +1,6 @@
 from nltk.corpus import movie_reviews
 from nltk.corpus import stopwords
+from nltk.classify.scikitlearn import SklearnClassifier
 import nltk
 import random
 import pickle
@@ -7,8 +8,8 @@ import pickle
 document = []
 
 #list of all stopwords
-st = stopwords.words("english")
-#cl]print(st)
+#st = stopwords.words("english")
+#print(st)
 
 
 #extracting the words from files and shuffling them
@@ -29,9 +30,10 @@ for w in movie_reviews.words():
 print("Number of words in total: ",count)
 
 all_words_freq = nltk.FreqDist(all_words)
-#print(all_words_freq.most_common(20))
+'''print(all_words_freq.most_common(20))'''
 
 #making a list of all words except stop words and counting them and printing them
+'''
 for w in all_words:
     if w not in st:
         stop_word_removed.append(w.lower())
@@ -40,11 +42,15 @@ for w in all_words:
 print("Number of words except the stop-words :",count1)
 
 stop_word_removed_freq = nltk.FreqDist(stop_word_removed)
-#print(stop_word_removed_freq.most_common(20))
+print(stop_word_removed_freq.most_common(20))
+print("plot over all words removed stop wors")
+stop_word_removed_freq.plot(30, cumulative = False)
+'''
 
 
 
 #plotting the frequency distribution curve
+print("plot over all words")
 all_words_freq.plot(30, cumulative =False)
 
 
@@ -65,9 +71,12 @@ def find_feature(document):
 
 #sending a review from negetive set to find features and prinitng its result
 
-#print(find_feature(movie_reviews.words("neg/cv000_29416.txt")))
+'''print(find_feature(movie_reviews.words("neg/cv000_29416.txt")))'''
 
 feature_set = [(find_feature(rev),category) for (rev,category) in document]
+
+
+
 
 #Naive Bayes Classifer
 
@@ -80,7 +89,20 @@ bayeClassifierSave = open("NaiveBayesClassifier.pickle","wb")
 pickle.dump(bayeClassifier,bayeClassifierSave)
 bayeClassifierSave.close()
 
+
+# to load from pickle 
+'''
+bayeClassifier_file = open("NaiveBayesClassifier.pickle", "rb")
+bayeClassifier = pickle.load(bayeClassifier_file)
+bayeClassifier_file.close()
+'''
+
+
+
 #testing it on test set
+
 print(nltk.classify.accuracy(bayeClassifier, test_set))
 
 bayeClassifier.show_most_informative_features(15)
+
+
