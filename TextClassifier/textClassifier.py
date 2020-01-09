@@ -10,6 +10,25 @@ from sklearn.linear_model import LogisticRegression, SGDClassifier
 from nltk.classify import ClassifierI
 from statistics import mode
 
+class VotedClassifier(ClassifierI):
+
+    def __init__(self, *classifier):
+        self._classifier = classifier
+    
+    def classify(self,feature):
+        votes = []
+        for c in self._classifier:
+            v = c.classify(feature)
+            votes.append(v)
+        return mode(votes)
+    def confidence(self,feature):
+        votes = []
+        for c in self._classifier:
+            v = c.classify(feature)
+            votes.append(v)
+        
+
+        return (votes.count(mode(votes)) / len(votes))
 
 
 
@@ -88,8 +107,8 @@ feature_set = [(find_feature(rev),category) for (rev,category) in document]
 
 #Naive Bayes Classifer
 
-train_set = feature_set[:1900]
-test_set = feature_set[1900:]
+train_set = feature_set[100:]
+test_set = feature_set[:100]
 
 #training the data set 
 bayeClassifier = nltk.NaiveBayesClassifier.train(train_set)
@@ -167,3 +186,9 @@ nuSVC_classifier = SklearnClassifier(NuSVC())
 nuSVC_classifier.train(train_set)
 print("NuSVC Accuracy: ", nltk.classify.accuracy(nuSVC_classifier, test_set))
 
+#training using VoteClassifier
+voted_classifier = VotedClassifier(bayeClassifier,multiNB_classifer, berNB_classifer,logisticReg_classifier,grad_dist_classifier,linearSVC_classifier,nuSVC_classifier)
+print("Voted Accuracy: ", nltk.classify.accuracy(voted_classifier, test_set))
+
+for i in range(5):
+    print("Sentiment for is =",voted_classifier.classify(test_set[i][0]),"with a confidence of = ",voted_classifier.confidence(test_set[i][0]))
